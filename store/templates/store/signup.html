@@ -1,0 +1,45 @@
+{% extends 'store/main.html' %}
+{% block content %}
+<div class="container">
+    <div class="p-4 m-4">
+        <div class="col-lg-5 mx-auto border rounded pt-4 pb-4">
+            <h4 class="alert alert-light border rounded">Create Account</h4>
+            <form action="/signup"  method="POST">
+                {% csrf_token %}
+
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{error}}
+                </div>
+                {% endif %}
+                <div class="form-group">
+                    <label for="">Name</label>
+                    <input type="text" name="name" value="{{form_data.name}}"  class="form-control from-control-sm" placeholder="enter name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="">Phone no</label>
+                    <input type="text" name="phone" value="{{form_data.phone}}" class="form-control from-control-sm" placeholder="enter phone number">
+                </div>
+
+                <div class="form-group">
+                  <label for="">Email</label>
+                  <input type="email" name="email" value="{{form_data.email}}" class="form-control from-control-sm" placeholder="enter email address">
+                </div>
+
+                <div class="form-group">
+                    <label for="">Password</label>
+                    <input type="password" name="password" class="form-control from-control-sm" placeholder="enter password">
+                </div>
+
+                <div class="form-group">
+                    <input type="submit" value="Create Account" class="btn btn-sm btn-info">
+                </div>
+            </form>
+            <div>
+                <p>Are you registerd user..? <span><a href="{% url 'login' %}">Login</a></span> </p>
+           </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

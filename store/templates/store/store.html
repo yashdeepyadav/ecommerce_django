@@ -1,18 +1,35 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-<div class="row">
-  {% for product in products %}
-  <div class="col-lg-4">
-    <img class="thumbnail" src="{{product.imageURL}}" alt="">
-    <div class="box-element product">
-      <h6><strong>{{product.name}}</strong></h6>
-      <hr>
-      <button class="btn btn-outline-secondary add-btn">Add to Cart</button>
-      <a class="btn btn-outline-success" href="#">View</a>
-      <h4 style="display: inline-block;float: right;">{{product.price|floatformat:2}}</h4>
+<div style="display: grid; grid-template-columns: 1fr 5fr;">
+    <div>
+        <div style="margin-top: 80px;">
+            <h5>Filer By: </h5>
+            <br>
+            <h6>Category</h6>
+            {% for category in categories %}
+            <a href="" style="text-decoration: none; display: block;">{{ category.name }}</a>
+            {% endfor %}
+
+        </div>
     </div>
-  </div>
-  {% endfor %}
+    <div class="row">
+      {% for product in products %}
+      <div class="col-lg-4">
+        <img class="thumbnail" src="{{product.imageURL}}" alt="">
+        <div class="box-element product">
+          <h6>
+            <strong>{{product.name}}</strong>
+            <span style="display: inline-block;float: right;">{{product.price|floatformat:2}}</span>
+            <br><span style="background-color: aliceblue;  color: black;">{{ product.category.name }}</span>
+          </h6>
+          <hr>
+          <button class="btn btn-outline-secondary add-btn">Add to Cart</button>
+          <a class="btn btn-outline-success" href="#">View</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
 </div>
+
 {% endblock content %}
