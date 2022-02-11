@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from store.models import Customer, Product, Order, OrderItem
-from . serializers import ProductSerializer, OrderItemSerializer, OrderSerializer
+from store.models import Category, Customer, Product, Order, OrderItem
+from . serializers import ProductSerializer, OrderItemSerializer, OrderSerializer, CategorySerializer
 from rest_framework import status
 from rest_framework.parsers import JSONParser
 from rest_framework.decorators import api_view, permission_classes
@@ -26,14 +26,12 @@ def getProducts(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getProduct(request, pk):
     product = Product.objects.get(id = pk)
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getProductByCategory(request, pk):
     product = Product.objects.get(category = pk)
     if product:
@@ -89,6 +87,58 @@ def makeOrder(request, pk):
     order_data = JSONParser().parse(request)
     customer =  Customer.objects.get(id = pk)
     print(customer.name)
+    serializer = OrderSerializer(customer, data = order_data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateOrderItem(request, pk):
+    order_item_data = JSONParser().parse(request)
+    order_item = OrderItem.objects.get(id = pk)
+    serializer = OrderItemSerializer(order_item, data = order_item_data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#------------ Order Item-----------------
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOrderItem(request):
+    order = OrderItem.objects.all()
+    serializer = OrderItemSerializer(order, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getOrderItemByCustomer(request , pk):
+    order_data = OrderItem.objects.get(customer_id = pk)
+    print(order_data.complete)
+    if order_data:
+        serializer = OrderItemSerializer(order_data, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def makeOrderItem(request):
+    order_data = JSONParser().parse(request)
+    product = Product.objects.get(id = order_data)
+    customer = request.user.customer
+    order = Order.objects.get_or_create(customer=customer, complete=False)
+    
+    orderItem = OrderItem.objects.get_or_create(order=order, product=product)
+    action = request.params
+    if action == 'add':
+      orderItem.quantity = (orderItem.quantity + 1)
+    elif action == 'remove':
+            orderItem.quantity = (orderItem.quantity - 1)
+    orderItem.save()
+   
     serializer = OrderSerializer(customer, data = order_data)
     if serializer.is_valid():
         serializer.save()
@@ -170,3 +220,56 @@ def login(request):
             return Response({"name" : cust.name, "phone": cust.phone, "email": cust.email, "password": cust.password, "id": cust.id})
         else:
             return Response({"message" : "username and password doesn't exist"})
+
+
+
+
+#------------ Category-----------------
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getCategory(request):
+    order = Category.objects.all()
+    serializer = CategorySerializer(order, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getCategoryById(request , pk):
+    order_data = Category.objects.get(id = pk)
+    if order_data:
+        serializer = CategorySerializer(order_data, many=False)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def addCategory(request):
+    product_data = JSONParser().parse(request)
+    serializer = CategorySerializer(data = product_data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def updateCategory(request, pk):
+    category_data = JSONParser().parse(request)
+    product = Category.objects.get(id = pk)
+    serializer = CategorySerializer(product, data = category_data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def deleteCategoryById(request, pk):
+    product = Category.objects.get(id = pk)
+    serializer = CategorySerializer(product)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

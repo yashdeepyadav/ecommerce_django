@@ -1,30 +1,48 @@
 from unicodedata import category
+from django.http import JsonResponse
 from django.shortcuts import render
 from . models import *
+import json
+from django.db.models import Q
 
 # Create your views here.
 
 def store(request):
-  products = Product.objects.all()
+  q  = request.GET.get('q') if  request.GET.get('q') != None else ''
+  products = Product.objects.filter(
+        Q(category__name__icontains = q) 
+        |
+        (Q(name__icontains = q)
+        )
+  )
+
   categories = Category.objects.all()
   context={'products':products , 'categories': categories}
   return render(request, 'store/store.html',context)
 
-
 def cart(request):
-  # if request.user.is_authenticated:
-  #   customer= request.user.customer
-  #   order ,created = Order.objects.get_or_create(customer=customer,complete=False)
-  #   items = order.orderitem_set.all()
-  # else:
-  #   items=[]
-  # context={'items':items}
-  return render(request,'store/cart.html')
+  if request.user.is_authenticated:
+    customer= request.user.customer
+    order ,created = Order.objects.get_or_create(customer=customer,complete=False)
+    items = order.orderitem_set.all()
+  else:
+    items=[]
+    order = {'get_cart_total': 0, 'get_cart_items': 0}
 
+  context={'items':items, 'order': order}
+  return render(request,'store/cart.html', context)
 
 def checkout(request):
-  context={}
-  return render(request,'store/checkout.html',context)
+   if request.user.is_authenticated:
+    customer= request.user.customer
+    order ,created = Order.objects.get_or_create(customer=customer,complete=False)
+    items = order.orderitem_set.all()
+   else:
+    items=[]
+    order = {'get_cart_total': 0, 'get_cart_items': 0}
+    
+   context={'items':items, 'order': order}
+   return render(request,'store/checkout.html',context)
 
 def signup(request):
   # context={}
@@ -34,4 +52,25 @@ def login(request):
   # context={}
   return render(request,'store/login.html')
 
+def updateItem(request):
+    data= json.loads(request.body)
+    productId = data['productId']
+    action = data['action']
 
+    print('Action:', action)
+    print('Product:', productId)  
+    customer = request.user.customer
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+    if action == 'add':
+      orderItem.quantity = (orderItem.quantity + 1)
+    elif action == 'remove':
+            orderItem.quantity = (orderItem.quantity - 1)
+    orderItem.save()
+    if orderItem.quantity <= 0:
+        orderItem.delete()
+    return JsonResponse('Item added', safe=False)
+    

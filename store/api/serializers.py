@@ -1,7 +1,7 @@
 from dataclasses import field
 from pyexpat import model
 from rest_framework.serializers import ModelSerializer
-from store.models import Product, Order, OrderItem, Customer
+from store.models import Category, Product, Order, OrderItem, Customer
 
 class ProductSerializer(ModelSerializer):
     class Meta:
@@ -21,4 +21,10 @@ class OrderSerializer(ModelSerializer):
 class CustomerSerializer(ModelSerializer):
     class Meta:
         model = Customer
+        fields = '__all__'
+
+
+class CategorySerializer(ModelSerializer):
+    class Meta:
+        model = Category
         fields = '__all__'

@@ -16,6 +16,18 @@ urlpatterns = [
     path('products/order/<str:pk>', views.getOrderByCustomer),
     path('products/add/order/<str:pk>', views.makeOrder),
 
+    # Order Item
+    path('products/get/all/order-items', views.getOrderItem),
+    path('products/order-items/<str:pk>', views.getOrderItemByCustomer),
+    path('products/add/order-item', views.makeOrderItem),
+
+     # Category
+    path('products/get/all/category', views.getCategory),    
+    path('products/category/get/<str:pk>', views.getCategoryById),
+    path('products/category/add/', views.addCategory),
+    path('products/category/update-one/<str:pk>', views.updateCategory),
+    path('products/category/delete/<str:pk>', views.deleteCategoryById),
+
     # Customer
     path('signup/', views.signup),
     path('login/', views.login),
