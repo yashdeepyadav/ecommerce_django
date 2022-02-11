@@ -10,7 +10,6 @@ for (i = 0; i < updateBtns.length; i++) {
         
         if (user == 'AnonymousUser'){
 			console.log("User Not Logged In")
-            updateUserOrder(productId, action)
 		}else{
             console.log("user is authorized, adding")
             updateUserOrder(productId, action)

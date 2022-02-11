@@ -25,8 +25,14 @@
             <br><span style="background-color: aliceblue;  color: black;">{{ product.category.name }}</span>
           </h6>
           <hr>
-          <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+          <button data-product="{{product.id}}" data-action="add" onclick="addCart(product)" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
           <a class="btn btn-outline-success" href="#">View</a>
+          <p id="p"></p>
+          <script>
+              addCart = (prod) =>{
+                  id = document.getElementById("p").innerHTML = 'Added'
+              }
+          </script>
         </div>
       </div>
       {% endfor %}
