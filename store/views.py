@@ -8,17 +8,22 @@ from django.db.models import Q
 # Create your views here.
 
 def store(request):
-  q  = request.GET.get('q') if  request.GET.get('q') != None else ''
-  products = Product.objects.filter(
-        Q(category__name__icontains = q) 
-        |
-        (Q(name__icontains = q)
-        )
-  )
-
-  categories = Category.objects.all()
-  context={'products':products , 'categories': categories}
-  return render(request, 'store/store.html',context)
+    message = ''
+    q  = request.GET.get('q') if  request.GET.get('q') != None else ''
+    products = Product.objects.filter(
+          Q(category__name__icontains = q) 
+          |
+          (Q(name__icontains = q)
+          )
+    )
+      
+    categories = Category.objects.all()
+    if products:
+        context={'products':products , 'categories': categories}
+        return render(request, 'store/store.html',context)
+    else:
+         message =  {'message' : 'Product not Found', 'categories': categories}
+         return render(request, 'store/store.html', message)
 
 def cart(request):
   if request.user.is_authenticated:
