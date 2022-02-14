@@ -59,7 +59,7 @@
           <a href="{% url 'cart' %}" style="text-decoration: none;">
             <img id="cart-icon" src="{% static 'images/carts.png' %}" title="Go Cart">
           </a>
-          <p id="cart-total">0</p>
+          <p id="cart-total">{{cartItems}}</p>
           <a href="{% url 'login' %}" class="btn btn-light" title="login">Login</a>
 
           <a href="{% url 'signup' %}" class="btn btn-light" title="signup">Signup</a>

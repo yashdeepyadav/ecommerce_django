@@ -43,8 +43,8 @@
 
   </div> -->
 
-  <div class="col-lg-6">
-    <div class="box-element">
+  <div class="col-lg-10 mt-5 p-5">
+    <div class="box-element pb-5 m-0">
       <a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
       <hr>
       <h3>Order Summary</h3>
@@ -63,9 +63,13 @@
         </div>
       </div>
       {% endfor %}
-      <h5>Items: {{ order.get_cart_items}}</h5>
-      <h5>Total: &nbsp;₹ {{ order.get_cart_total  |floatformat:2}}</h5>
     </div>
+    <div class="box-element w-70 m-1  float-right border border-warning" >
+      <h5>Items: {{ order.get_cart_items}}</h5>
+      <h5>Total: &nbsp;₹ {{ order.get_cart_total  |floatformat:2}}</h5>    
+  </div>
+  <input id="form-button" class="btn btn-success btn-block" type="submit" value="Checkout">
+
   </div>
 </div>
 {% endblock content %}

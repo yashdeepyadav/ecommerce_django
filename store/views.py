@@ -16,10 +16,18 @@ def store(request):
           (Q(name__icontains = q)
           )
     )
-      
+    
     categories = Category.objects.all()
+    if request.user.is_authenticated:
+      customer= request.user.customer
+      order ,created = Order.objects.get_or_create(customer=customer,complete=False)
+      items = order.orderitem_set.all()
+      cartItems = order.get_cart_items
+    else:
+        cartItems = order.get_cart_items
+        order = {'get_cart_total': 0, 'get_cart_items': 0}
     if products:
-        context={'products':products , 'categories': categories}
+        context={'products':products , 'categories': categories, 'cartItems': cartItems,}
         return render(request, 'store/store.html',context)
     else:
          message =  {'message' : 'Product not Found', 'categories': categories}
